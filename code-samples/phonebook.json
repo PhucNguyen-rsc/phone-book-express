@@ -1,0 +1,27 @@
+[
+    {
+        "phoneNumbers": ["123-456-7890", "800-123-4567"],
+        "email": "johndoe@example.com",
+        "name": "John Doe"
+    },
+    {
+        "phoneNumbers": ["000-000-0000"],
+        "email": "janedoe@example.com",
+        "name": "Jane Doe"
+    },
+    {
+        "phoneNumbers": ["666-666-6666", "999-999-9999"],
+        "email": "ronswanson@example.com",
+        "name": "Ron Swanson"
+    },
+    {
+        "phoneNumbers": ["555-555-5555"],
+        "email": "bob@example.com",
+        "name": "Bob"
+    },
+    {
+        "phoneNumbers": ["123-555-0156", "123-555-0800"],
+        "email": "alice@example.com",
+        "name": "Alice"
+    }
+]
