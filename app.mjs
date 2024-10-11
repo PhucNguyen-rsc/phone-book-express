@@ -12,7 +12,7 @@ hbs.registerHelper("join", function (array, separator) {
     return array.join(separator);
 });
 
-function decorate(contact){ //underline strings
+function decorate(contact){ 
     return `<span class="contact-info" >${contact.name}</span>`;
 }
 
