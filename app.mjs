@@ -121,7 +121,7 @@ app.post('/phonebook', (req,res) =>{
             console.log("Error !");
         }
         else{
-            const contactInfo = JSON.parse(data);//no search found    
+            const contactInfo = JSON.parse(data);   
             const name = req.body.name.trim();
             const email = req.body.email.trim();
             const contact = req.body.phoneNumbers.trim();
