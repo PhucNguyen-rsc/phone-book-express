@@ -1,0 +1,18 @@
+<section class="editor">
+    <div class = "editor-part">
+        {{#if submit}}
+            <form action="/editor" method="POST" class="editor-form">
+                <input class="editor-pad" name ="formText" value="{{original}}">
+                <button class="submit">Submit</button>
+            </form>
+            <div class="editor-show" name ="submit">
+                {{{newString}}} 
+            </div>
+        {{else}}
+            <form action="/editor" method="POST" class="editor-form">
+                <input class="editor-pad" name ="formText" value="">
+                <button class="submit">Submit</button>
+            </form>
+        {{/if}}
+    </div>
+</section>

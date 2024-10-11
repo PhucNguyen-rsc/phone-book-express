@@ -2,6 +2,26 @@ import { expect } from 'chai';
 import request from "supertest";
 import { app, decorate, server } from '../app.mjs';
 
+const validate = (response, contacts, include = true) => {
+    if (include) {
+        contacts.forEach(contact => {
+            expect(response.text).to.include(contact.name);
+            expect(response.text).to.include(contact.email);
+            contact.phoneNumbers.forEach(ph => {
+                expect(response.text).to.include(ph);
+            });
+        });
+    } else {
+        contacts.forEach(contact => {
+            expect(response.text).to.not.include(contact.name);
+            expect(response.text).to.not.include(contact.email);
+            contact.phoneNumbers.forEach(ph => {
+                expect(response.text).to.not.include(ph);
+            });
+        });
+    }
+};
+
 describe('App', function () {
     let contacts;
 
@@ -81,7 +101,7 @@ describe('App', function () {
                 email: "ronswanson@example.com",
                 name: "Ron Swanson"
             };
-            const modifiedText = `I am going out with ${decorate(jd)} and ${decorate(rs)}`;
+            const modifiedText = `I am going out with ${decorate(jd)} and ${decorate(rs)}.`;
 
             const response = await request(app)
                 .post('/editor')
@@ -95,11 +115,7 @@ describe('App', function () {
         it('should render phonebook page and display all the contacts', async function () {
             const response = await request(app).get('/phonebook');
             expect(response.status).to.eql(200);
-            contacts.forEach(contact => {
-                expect(response.text).to.include(contact.name);
-                expect(response.text).to.include(contact.email);
-                expect(response.text).to.include(contact.phoneNumbers.join(', '));
-            });
+            validate(response, contacts);
         });
 
         it('should display all the contacts where the search string matches part of the name', async function () {
@@ -111,16 +127,8 @@ describe('App', function () {
                 .query({ contact: 'Doe' });
 
             expect(response.status).to.be.eql(200);
-            filteredContacts.forEach(contact => {
-                expect(response.text).to.include(contact.name);
-                expect(response.text).to.include(contact.email);
-                expect(response.text).to.include(contact.phoneNumbers.join(', '));
-            });
-            removedContacts.forEach(contact => {
-                expect(response.text).to.not.include(contact.name);
-                expect(response.text).to.not.include(contact.email);
-                expect(response.text).to.not.include(contact.phoneNumbers.join(', '));
-            });
+            validate(response, filteredContacts);
+            validate(response, removedContacts, false);
         });
 
         it('should display all the contacts where the search string matches part of the email', async function () {
@@ -132,16 +140,8 @@ describe('App', function () {
                 .query({ contact: 'doe@example.com' });
 
             expect(response.status).to.be.eql(200);
-            filteredContacts.forEach(contact => {
-                expect(response.text).to.include(contact.name);
-                expect(response.text).to.include(contact.email);
-                expect(response.text).to.include(contact.phoneNumbers.join(', '));
-            });
-            removedContacts.forEach(contact => {
-                expect(response.text).to.not.include(contact.name);
-                expect(response.text).to.not.include(contact.email);
-                expect(response.text).to.not.include(contact.phoneNumbers.join(', '));
-            });
+            validate(response, filteredContacts);
+            validate(response, removedContacts, false);
         });
 
         it('should display all the contacts where the search string matches part of the phone number', async function () {
@@ -153,16 +153,8 @@ describe('App', function () {
                 .query({ contact: '555' });
 
             expect(response.status).to.be.eql(200);
-            filteredContacts.forEach(contact => {
-                expect(response.text).to.include(contact.name);
-                expect(response.text).to.include(contact.email);
-                expect(response.text).to.include(contact.phoneNumbers.join(', '));
-            });
-            removedContacts.forEach(contact => {
-                expect(response.text).to.not.include(contact.name);
-                expect(response.text).to.not.include(contact.email);
-                expect(response.text).to.not.include(contact.phoneNumbers.join(', '));
-            });
+            validate(response, filteredContacts);
+            validate(response, removedContacts, false);
         });
     });
 
@@ -177,15 +169,21 @@ describe('App', function () {
                 .post('/phonebook')
                 .type('form')
                 .send(newContact);
-            expect(response.status).to.eql(200);
-            contacts.forEach(contact => {
-                expect(response.text).to.include(contact.name);
-                expect(response.text).to.include(contact.email);
-                expect(response.text).to.include(contact.phoneNumbers.join(', '));
+            expect(response.status).to.be.within(300, 399);
+
+            const redirectUrl = response.headers.location;
+
+            const redirectRes = await request(app)
+                .get(redirectUrl)
+                .expect(200);
+
+            validate(redirectRes, contacts);
+
+            expect(redirectRes.text).to.include(newContact.name);
+            expect(redirectRes.text).to.include(newContact.email);
+            newContact.phoneNumbers.split(',').forEach(ph => {
+                expect(redirectRes.text).to.include(ph);
             });
-            expect(response.text).to.include(newContact.name);
-            expect(response.text).to.include(newContact.email);
-            expect(response.text).to.include(newContact.phoneNumbers.split(',').join(', '));
         });
     });
 

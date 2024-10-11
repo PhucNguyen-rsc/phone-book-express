@@ -1,0 +1,33 @@
+<section class="phonebook">
+    <form action="/phonebook" method="GET" class="search-form">
+        <input type="text" name="contact" placeholder="Search..." class="search-input">
+        <button class="search-btn">Search</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone Number(s)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each contacts}}
+                <tr>
+                    <td>{{this.name}}</td>
+                    <td>{{this.email}}</td>
+                    <td>{{join this.phoneNumbers ", "}}</td>                   
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+
+    <form action="/phonebook" method="POST" class="add-form">
+        <input type="text" name="name" value="" placeholder="Enter Name..." class="add-name">
+        <input type="text" name="email" value="" placeholder="Enter Email..." class="add-email">
+        <input type="text" name="phoneNumbers" value="" placeholder="Enter Phone Number..." class="add-phone">
+        <button class="search-btn">Add</button>
+    </form>
+
+</section>
